@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ recipe.title }} - Recipe Book{% endblock %}
+
+{% block content %}
+<div class="recipe-detail-container">
+    <div class="recipe-detail-header">
+        <div class="container">
+            <nav class="breadcrumb">
+                <a href="{% url 'recipe_list' %}">All Recipes</a>
+                <span class="breadcrumb-separator">→</span>
+                <span class="breadcrumb-current">{{ recipe.title }}</span>
+            </nav>
+        </div>
+    </div>
+
+    <div class="recipe-hero">
+        <div class="container">
+            <div class="recipe-hero-content">
+                <div class="recipe-hero-text">
+                    <div class="recipe-meta-badges">
+                        <span class="category-badge">{{ recipe.category.name }}</span>
+                        <span class="difficulty-badge {{ recipe.difficulty }}">
+                            {{ recipe.get_difficulty_display }}
+                        </span>
+                    </div>
+                    
+                    <h1 class="recipe-title">{{ recipe.title }}</h1>
+                    <p class="recipe-description">{{ recipe.description }}</p>
+                    
+                    <div class="recipe-quick-stats">
+                        <div class="stat-item">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-content">
+                                <div class="stat-label">Prep Time</div>
+                                <div class="stat-value">{{ recipe.prep_time }} min</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">🔥</div>
+                            <div class="stat-content">
+                                <div class="stat-label">Cook Time</div>
+                                <div class="stat-value">{{ recipe.cook_time }} min</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">⏰</div>
+                            <div class="stat-content">
+                                <div class="stat-label">Total Time</div>
+                                <div class="stat-value">{{ recipe.total_time }} min</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-content">
+                                <div class="stat-label">Servings</div>
+                                <div class="stat-value">{{ recipe.servings }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="favorite-btn-large" data-recipe-id="{{ recipe.id }}" 
+                            data-recipe-title="{{ recipe.title }}" 
+                            data-recipe-url="{% url 'recipe_detail' recipe.slug %}"
+                            data-recipe-image="{% if recipe.image %}{{ recipe.image.url }}{% else %}{% static 'images/placeholder-recipe.jpg' %}{% endif %}">
+                        <span class="heart">🤍</span>
+                        <span class="favorite-text">Add to Favorites</span>
+                    </button>
+                </div>
+                
+                <div class="recipe-hero-image">
+                    {% if recipe.image %}
+                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe-main-image">
+                    {% else %}
+                        <div class="recipe-placeholder-large">
+                            <span class="recipe-placeholder-icon">🍽️</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="recipe-content">
+        <div class="container">
+            <div class="recipe-content-grid">
+                <div class="recipe-ingredients">
+                    <div class="content-section">
+                        <h2 class="section-title">
+                            <span class="section-icon">🛒</span>
+                            Ingredients
+                        </h2>
+                        <ul class="ingredients-list">
+                            {% for ingredient in recipe.get_ingredients_list %}
+                                <li class="ingredient-item">
+                                    <input type="checkbox" class="ingredient-checkbox" id="ingredient-{{ forloop.counter }}">
+                                    <label for="ingredient-{{ forloop.counter }}">{{ ingredient }}</label>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="recipe-instructions">
+                    <div class="content-section">
+                        <h2 class="section-title">
+                            <span class="section-icon">👨‍🍳</span>
+                            Instructions
+                        </h2>
+                        <ol class="instructions-list">
+                            {% for instruction in recipe.get_instructions_list %}
+                                <li class="instruction-item">
+                                    <div class="instruction-number">{{ forloop.counter }}</div>
+                                    <div class="instruction-text">{{ instruction }}</div>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if related_recipes %}
+    <div class="related-recipes">
+        <div class="container">
+            <h2 class="section-title">More from {{ recipe.category.name }}</h2>
+            <div class="related-recipes-grid">
+                {% for related_recipe in related_recipes %}
+                    {% include 'partials/recipe_card.html' with recipe=related_recipe %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

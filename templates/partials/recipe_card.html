@@ -1,0 +1,57 @@
+{% load static %}
+
+<div class="recipe-card" data-recipe-id="{{ recipe.id }}">
+    <div class="recipe-card-image">
+        {% if recipe.image %}
+            <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" loading="lazy">
+        {% else %}
+            <div class="recipe-placeholder">
+                <span class="recipe-placeholder-icon">🍽️</span>
+            </div>
+        {% endif %}
+        <button class="favorite-btn" data-recipe-id="{{ recipe.id }}" 
+                data-recipe-title="{{ recipe.title }}" 
+                data-recipe-url="{% url 'recipe_detail' recipe.slug %}"
+                data-recipe-image="{% if recipe.image %}{{ recipe.image.url }}{% else %}{% static 'images/placeholder-recipe.jpg' %}{% endif %}">
+            <span class="heart">🤍</span>
+        </button>
+        <div class="recipe-difficulty {{ recipe.difficulty }}">
+            {{ recipe.get_difficulty_display }}
+        </div>
+    </div>
+    
+    <div class="recipe-card-content">
+        <div class="recipe-card-header">
+            <h3 class="recipe-card-title">
+                <a href="{% url 'recipe_detail' recipe.slug %}">{{ recipe.title }}</a>
+            </h3>
+            <div class="recipe-card-category">{{ recipe.category.name }}</div>
+        </div>
+        
+        <p class="recipe-card-description">{{ recipe.description|truncatewords:20 }}</p>
+        
+        <div class="recipe-card-meta">
+            <div class="recipe-meta-item">
+                <span class="meta-icon">⏱️</span>
+                <span>{{ recipe.prep_time }}min prep</span>
+            </div>
+            <div class="recipe-meta-item">
+                <span class="meta-icon">🔥</span>
+                <span>{{ recipe.cook_time }}min cook</span>
+            </div>
+            <div class="recipe-meta-item">
+                <span class="meta-icon">👥</span>
+                <span>{{ recipe.servings }} serving{{ recipe.servings|pluralize }}</span>
+            </div>
+        </div>
+        
+        <div class="recipe-card-footer">
+            <div class="recipe-total-time">
+                Total: {{ recipe.total_time }} minutes
+            </div>
+            <a href="{% url 'recipe_detail' recipe.slug %}" class="btn btn-primary btn-sm">
+                View Recipe
+            </a>
+        </div>
+    </div>
+</div>

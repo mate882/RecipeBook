@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Recipes - Recipe Book{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-container">
+        <h1 class="hero-title">Discover Delicious Recipes</h1>
+        <p class="hero-subtitle">Find your next favorite dish from our collection of handcrafted recipes</p>
+        
+        <div class="search-container">
+            <form method="GET" class="search-form" id="search-form">
+                <div class="search-input-wrapper">
+                    <input type="text" name="search" placeholder="Search recipes, ingredients..." 
+                           class="search-input" value="{{ search_query }}">
+                    <button type="submit" class="search-btn">🔍</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="filters-section">
+    <div class="container">
+        <div class="filters-wrapper">
+            <div class="filters-group">
+                <label class="filter-label">Category:</label>
+                <select name="category" class="filter-select" id="category-filter">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.slug }}" 
+                                {% if current_category == category.slug %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filters-group">
+                <label class="filter-label">Difficulty:</label>
+                <select name="difficulty" class="filter-select" id="difficulty-filter">
+                    <option value="">All Levels</option>
+                    {% for value, label in difficulty_choices %}
+                        <option value="{{ value }}" 
+                                {% if current_difficulty == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filters-group">
+                <label class="filter-label">Sort by:</label>
+                <select name="sort" class="filter-select" id="sort-filter">
+                    <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest First</option>
+                    <option value="title" {% if current_sort == 'title' %}selected{% endif %}>Name A-Z</option>
+                    <option value="prep_time" {% if current_sort == 'prep_time' %}selected{% endif %}>Prep Time</option>
+                    <option value="total_time" {% if current_sort == 'total_time' %}selected{% endif %}>Total Time</option>
+                    <option value="difficulty" {% if current_sort == 'difficulty' %}selected{% endif %}>Difficulty</option>
+                </select>
+            </div>
+
+            <div class="view-toggle">
+                <button id="grid-view" class="view-btn active" title="Grid View">⊞</button>
+                <button id="list-view" class="view-btn" title="List View">☰</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="recipes-section">
+    <div class="container">
+        {% if recipes %}
+            <div class="recipes-count">
+                Found {{ recipes.count }} recipe{{ recipes.count|pluralize }}
+            </div>
+            
+            <div class="recipes-grid" id="recipes-container">
+                {% for recipe in recipes %}
+                    {% include 'partials/recipe_card.html' %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-results">
+                <div class="no-results-icon">🍽️</div>
+                <h3>No recipes found</h3>
+                <p>Try adjusting your search or filters to find more recipes.</p>
+                <a href="{% url 'recipe_list' %}" class="btn btn-primary">View All Recipes</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Favorites Modal -->
+<div id="favorites-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Your Favorite Recipes</h2>
+            <button class="modal-close" id="close-favorites">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="favorites-list" class="favorites-list">
+                <!-- Favorite recipes will be populated here by JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
